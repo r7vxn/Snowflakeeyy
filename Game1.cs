@@ -77,15 +77,21 @@ namespace Snowflakeeyy
                 Rectangle snowFlakeRectangle = snowFlakes[i].Rectangle;
                 float snowFlakeTimer = snowFlakes[i].Timer;
 
-                snowFlakes[i] = new(
-                    new Rectangle(
-                    snowFlakes[i].Rectangle.X + (int)fallspeed.X,
-                    snowFlakes[i].Rectangle.Y + (int)fallspeed.Y,
-                    snowFlakes[i].Rectangle.Width,
-                    snowFlakes[i].Rectangle.Height
-                    ),
-                snowFlakes[i].Timer
-                );
+                snowFlakeRectangle.X += (int)fallspeed.X;
+                snowFlakeRectangle.Y += (int)fallspeed.Y;
+
+                if (snowCollectRect.Contains(snowFlakeRectangle))
+                {
+                    snowFlakeRectangle = snowFlakes[i].Rectangle;
+                    snowFlakeTimer -= (float)gameTime.ElapsedGameTime.TotalSeconds;
+                    if (snowFlakeTimer < 0)
+                    {
+                        snowFlakeRectangle = new Rectangle(generator.Next(window.Width), generator.Next(-10, 0), 8, 8);
+                        snowFlakeTimer = 5;
+                    }
+                }
+
+                snowFlakes[i] = (snowFlakeRectangle, snowFlakeTimer);
 
                 if (snowFlakes[i].Rectangle.Y > window.Height)
                 {
@@ -95,32 +101,12 @@ namespace Snowflakeeyy
                     generator.Next(-10, 0),
                     8,
                     8),
-                    snowFlakes[i].Timer
+                    5
                     );
                 }
-                if (snowCollectRect.Contains(snowFlakes[i].Rectangle))
-                {
-                    
-                    snowFlakes[i] = new(
-                      new Rectangle(
-                    snowFlakes[i].Rectangle.X + (int)stop.X,
-                    snowFlakes[i].Rectangle.Y + (int)stop.Y,
-                    snowFlakes[i].Rectangle.Width,
-                    snowFlakes[i].Rectangle.Height
-                    ),
-                    snowFlakes[i].Timer - (float)gameTime.ElapsedGameTime.TotalSeconds);
 
-                    if (seconds < 0)
-                    {
-                        snowFlakes[i] = new(
-                        new Rectangle(
-                        generator.Next(window.Width),
-                        generator.Next(-10, 0),
-                        8,
-                        8),
-                        snowFlakes[i].Timer);
-                    }
-                }
+
+               
             }
             base.Update(gameTime);
         }
